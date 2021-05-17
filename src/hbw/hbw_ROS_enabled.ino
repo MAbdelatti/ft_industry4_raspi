@@ -2,23 +2,49 @@
 #define USE_USBCON
 
 #include <ros.h>
-#include <std_msgs/Bool.h>
+#include <std_msgs/String.h>
 #include <Ftduino.h>
 
 ros::NodeHandle nh;
+bool move_hbw = true;
 
-void out_processing(const std_msgs::Bool &payload_msg){
-  //Move robot from home position to first inventory rack position
- if (payload_msg.data){
+void bring_back_home(){
+  //Vertical motor setup
+  uint16_t button2 = ftduino.input_get(Ftduino::I8);
+  uint16_t button3 = ftduino.input_get(Ftduino::I5);
+  uint16_t button5 = ftduino.input_get(Ftduino::I6);
   
+  //depth motor
+  ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftduino::MAX);
+  while(!button5){
+    button5 = ftduino.input_get(Ftduino::I6);
+   }
+  ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
+  
+  //horizontal motor
+  ftduino.motor_set(Ftduino::M2, Ftduino::RIGHT, Ftduino::MAX);
+  while(!button3){
+    button3 = ftduino.input_get(Ftduino::I5);
+  }
+  ftduino.motor_set(Ftduino::M2, Ftduino::OFF, Ftduino::MAX);
+  
+  //vertical motor
+  ftduino.motor_set(Ftduino::M4, Ftduino::RIGHT, Ftduino::MAX);
+  while(!button2){
+    button2 = ftduino.input_get(Ftduino::I8);
+  }
+  ftduino.motor_set(Ftduino::M4, Ftduino::OFF, Ftduino::MAX);
+}
+
+void move_robot_outprocessing(uint16_t x, uint16_t y){
   nh.loginfo("HBW Received an Order");
   if(ftduino.input_get(Ftduino::I5)){
    ftduino.motor_counter_set_brake
    (Ftduino::M2, false);
-   ftduino.motor_counter(Ftduino::M2, Ftduino::LEFT, Ftduino::MAX, 810);
+   ftduino.motor_counter(Ftduino::M2, Ftduino::LEFT, Ftduino::MAX, x);
    while(ftduino.motor_counter_active(Ftduino::M2));
    ftduino.motor_counter_set_brake(Ftduino::M4, false);
-   ftduino.motor_counter(Ftduino::M4, Ftduino::LEFT, Ftduino::MAX, 100);
+   ftduino.motor_counter(Ftduino::M4, Ftduino::LEFT, Ftduino::MAX, y);
    while(ftduino.motor_counter_active(Ftduino::M4));
    
    // Extend robot arm 
@@ -49,11 +75,15 @@ void out_processing(const std_msgs::Bool &payload_msg){
     ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
   
     //Return robot to conveyor unit
-  
    ftduino.motor_counter_set_brake(Ftduino::M4, false);
-   ftduino.motor_counter(Ftduino::M2, Ftduino::RIGHT, Ftduino::MAX, 768);
+   ftduino.motor_counter(Ftduino::M2, Ftduino::RIGHT, Ftduino::MAX, x-40); //768
    while(ftduino.motor_counter_active(Ftduino::M2));
-   ftduino.motor_counter(Ftduino::M4, Ftduino::LEFT, Ftduino::MAX, 650);
+   if (y < 800){
+     ftduino.motor_counter(Ftduino::M4, Ftduino::LEFT, Ftduino::MAX, 750-y);  //650
+   }
+   else{
+     ftduino.motor_counter(Ftduino::M4, Ftduino::RIGHT, Ftduino::MAX, y-790);  //650
+   }
    while(ftduino.motor_counter_active(Ftduino::M4));
   
    // Extend the robot's arm fully
@@ -99,13 +129,17 @@ void out_processing(const std_msgs::Bool &payload_msg){
       button3 = ftduino.input_get(Ftduino::I6);
      }
     ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
-    
-    ftduino.motor_counter(Ftduino::M4, Ftduino::RIGHT, Ftduino::MAX, 650);
+    if (y < 800){
+      ftduino.motor_counter(Ftduino::M4, Ftduino::RIGHT, Ftduino::MAX, 750-y);
+    }
+    else{
+      ftduino.motor_counter(Ftduino::M4, Ftduino::LEFT, Ftduino::MAX, y-790);
+    }
     while(ftduino.motor_counter_active(Ftduino::M4));
     
   
    // Return the robot to the inventory rack position 
-    ftduino.motor_counter(Ftduino::M2, Ftduino::LEFT, Ftduino::MAX, 768);
+    ftduino.motor_counter(Ftduino::M2, Ftduino::LEFT, Ftduino::MAX, x-40);
     while(ftduino.motor_counter_active(Ftduino::M2));   
    
     // Extend robot arm 
@@ -123,27 +157,87 @@ void out_processing(const std_msgs::Bool &payload_msg){
    ftduino.motor_counter(Ftduino::M4, Ftduino::LEFT, Ftduino::MAX, 100);
    while(ftduino.motor_counter_active(Ftduino::M4));
    nh.loginfo("HBW Empty Box is Back on the Shelf");
-  
-   // Retract the robot's arm fully
-   uint16_t button5 = ftduino.input_get(Ftduino::I6);
-    //turns motor back on, in other direction
-    ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftduino::MAX);
-    while(!button5){
-      button5 = ftduino.input_get(Ftduino::I6);
-     }
-    ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
-  
+     
    // Return to home position
-   
-   ftduino.motor_counter(Ftduino::M4, Ftduino::RIGHT, Ftduino::MAX, 100);
-   while(ftduino.motor_counter_active(Ftduino::M4));
-   ftduino.motor_counter(Ftduino::M2, Ftduino::RIGHT, Ftduino::MAX, 810);
-   while(ftduino.motor_counter_active(Ftduino::M2));
+   bring_back_home();
    nh.loginfo("HBW Robot is Set to Home");
   }
+
+
+void out_processing(const std_msgs::String &payload_msg){
+  const char* const_text = "Heading to location: ";
+  char log_message[256];
+  strcpy(log_message, const_text);
+  strcpy(log_message, payload_msg.data);
+
+  nh.loginfo(log_message);
+  
+  if(String(payload_msg.data)=="A1" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 810;
+    uint16_t y = 100;
+    move_robot_outprocessing(x, y); 
+ }
+
+  else if(String(payload_msg.data)=="A2" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 1405;
+    uint16_t y = 100;
+    move_robot_outprocessing(x, y); 
+ }
+
+  else if(String(payload_msg.data)=="A3" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 2020;
+    uint16_t y = 100;
+    move_robot_outprocessing(x, y); 
+ }
+
+  else if(String(payload_msg.data)=="B1" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 810;
+    uint16_t y = 450;
+    move_robot_outprocessing(x, y); 
+ }
+
+  else if(String(payload_msg.data)=="B2" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 1405;
+    uint16_t y = 450;
+    move_robot_outprocessing(x, y); 
+ }
+
+  else if(String(payload_msg.data)=="B3" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 2020;
+    uint16_t y = 450;
+    move_robot_outprocessing(x, y); 
+ }
+
+  else if(String(payload_msg.data)=="C1" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 810;
+    uint16_t y = 840;
+    move_robot_outprocessing(x, y); 
+ }
+
+  else if(String(payload_msg.data)=="C2" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 1405;
+    uint16_t y = 840;
+    move_robot_outprocessing(x, y); 
+ }
+
+  else if(String(payload_msg.data)=="C3" && move_hbw){
+    move_hbw = false;
+    uint16_t x = 2020;
+    uint16_t y = 840;
+    move_robot_outprocessing(x, y);
+ }
+ move_hbw = true;
 }
 
-void in_processing(const std_msgs::Bool &payload_msg){
+void in_processing(const std_msgs::String &payload_msg){
   if (payload_msg.data){
     
    nh.loginfo("HBW is Preparing an Empty Box"); 
@@ -275,8 +369,8 @@ void in_processing(const std_msgs::Bool &payload_msg){
   }
 }
 
-ros::Subscriber<std_msgs::Bool> new_order_sub("new_order", &out_processing);
-ros::Subscriber<std_msgs::Bool> vgr_new_material_pub("vgr_new_material", &in_processing);
+ros::Subscriber<std_msgs::String> new_order_sub("new_order", &out_processing);
+ros::Subscriber<std_msgs::String> vgr_new_material_pub("vgr_new_material", &in_processing);
 
 void setup() {
   // put your setup code here, to run once:
