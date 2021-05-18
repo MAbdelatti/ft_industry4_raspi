@@ -8,6 +8,10 @@
 ros::NodeHandle nh;
 bool move_hbw = true;
 
+std_msgs::String str_msg;
+ros::Publisher update_empty("what_is_empty", &str_msg);
+char empty_payload[3] = "D4";
+
 void bring_back_home(){
   //Vertical motor setup
   uint16_t button2 = ftduino.input_get(Ftduino::I8);
@@ -157,6 +161,11 @@ void move_robot_outprocessing(uint16_t x, uint16_t y){
    ftduino.motor_counter(Ftduino::M4, Ftduino::LEFT, Ftduino::MAX, 100);
    while(ftduino.motor_counter_active(Ftduino::M4));
    nh.loginfo("HBW Empty Box is Back on the Shelf");
+
+   //publish the shelf name to the topic what_is_empty:
+   str_msg.data = empty_payload;
+   update_empty.publish( &str_msg );
+   nh.spinOnce();
      
    // Return to home position
    bring_back_home();
@@ -165,12 +174,8 @@ void move_robot_outprocessing(uint16_t x, uint16_t y){
 
 
 void out_processing(const std_msgs::String &payload_msg){
-  const char* const_text = "Heading to location: ";
-  char log_message[256];
-  strcpy(log_message, const_text);
-  strcpy(log_message, payload_msg.data);
 
-  nh.loginfo(log_message);
+  strcpy(empty_payload, payload_msg.data);
   
   if(String(payload_msg.data)=="A1" && move_hbw){
     move_hbw = false;
@@ -377,6 +382,7 @@ void setup() {
   nh.initNode();
   nh.subscribe(new_order_sub);
   nh.subscribe(vgr_new_material_pub);
+  nh.advertise(update_empty);
   ftduino.init();
 }
 
