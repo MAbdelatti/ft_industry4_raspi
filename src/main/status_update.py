@@ -1,8 +1,23 @@
 #!/usr/bin/env python
 
 import json
+import time
 import rospy
 from std_msgs.msg import String
+
+def talker(target_loc, terminate):
+    pub = rospy.Publisher('provide_empty_loc_back', String, queue_size=1)
+    rate = rospy.Rate(10) # 10hz
+    while not terminate:
+        connections = pub.get_num_connections()
+        #subcriber_name = 
+        if connections > 0:
+            pub.publish(target_loc)
+            rospy.loginfo('Published {}'.format(target_loc))
+            terminate = True
+        else:
+            print('Waiting for subscribers')
+            rate.sleep()
 
 def remove_item_cb(msg):
     if msg.data:
@@ -32,10 +47,20 @@ def add_item_cb(msg):
 
         rospy.loginfo('Status updated successfully')
 
+def provide_empty_loc_cb(msg):
+    if msg.data == "vgr asks for free location":
+        # Read existing data file:
+        with open('data.json', 'r') as fp:
+            r_data = json.load(fp)
+        free_loc = (list(r_data.keys())[list(r_data.values()).index("NA")])
+        talker(free_loc, False)
+
 def listener():
     rospy.init_node('status_update', anonymous=True)
-    rospy.Subscriber('what_is_empty', String, remove_item_cb)
-    rospy.Subscriber('what_is_occupied', String, add_item_cb)
+
+    rospy.Subscriber('what_is_empty'    , String, remove_item_cb)
+    rospy.Subscriber('what_is_occupied' , String, add_item_cb)
+    rospy.Subscriber('provide_empty_loc', String, provide_empty_loc_cb)
     
     rospy.spin()
 
