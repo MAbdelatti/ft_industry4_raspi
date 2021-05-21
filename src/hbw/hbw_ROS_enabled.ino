@@ -231,6 +231,7 @@ void out_processing(const std_msgs::String &payload_msg){
   uint16_t y;
 
   String shelf_loc = String(payload_msg.data);
+  nh.loginfo(payload_msg.data);
   
   if(shelf_loc == "A1" && move_hbw){
     move_hbw = false;

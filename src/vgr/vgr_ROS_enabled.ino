@@ -166,27 +166,20 @@ void empty_locCb(const std_msgs::String &payload_msg){
   String prefix = String(payload_msg.data).substring(0,1);
   String suffix = String(payload_msg.data).substring(1,2);
 
-  nh.loginfo("I heard something");
   if ((prefix == "A" || prefix == "B" || prefix == "C") && (suffix == "1" || suffix == "2" || suffix == "3")){    
     strcpy(empty_loc_content, payload_msg.data);
-
-    nh.loginfo(empty_loc_content);
-    nh.loginfo(detected_color);
 
     char msg_content[9];
     strcpy(msg_content, empty_loc_content);
     strcat(msg_content, "_");
     strcat(msg_content, detected_color);
     str_msg.data = msg_content;
-    nh.loginfo(str_msg.data);
 
 // This should publish the returned value from the above request to the vgr_new_material:
-   nh.loginfo("where is str_msg.data???");
-   nh.loginfo(str_msg.data);
   
    vgr_new_material.publish( &str_msg);
    nh.spinOnce();
-  
+     
    in_processing_object = false;
    
   ftduino.motor_counter(Ftduino::M2, Ftduino::RIGHT, Ftduino::MAX, 670);
@@ -201,7 +194,15 @@ void empty_locCb(const std_msgs::String &payload_msg){
   ftduino.motor_counter(Ftduino::M2, Ftduino::LEFT, Ftduino::MAX, 30);
   while(ftduino.motor_counter_active(Ftduino::M2));
 
-  delay(12000);
+  if (suffix == "1"){
+    delay(20500);  
+  }
+  else if (suffix == "2"){
+    delay(23500);  
+  }
+  else if (suffix == "3"){
+    delay(30500);  
+  }
   
   //drop material
   ftduino.output_set(Ftduino::O8, Ftduino::LO, Ftduino::MAX);
@@ -313,7 +314,17 @@ void material_processing(const std_msgs::String &payload_msg){
     //pick up material
     ftduino.motor_counter(Ftduino::M3, Ftduino::LEFT, Ftduino::MAX, 180);
     while(ftduino.motor_counter_active(Ftduino::M3));
-    delay(21000);
+    
+    if (suffix == "1"){
+      delay(21500);  
+    }
+    else if (suffix == "2"){
+      delay(24500);  
+    }
+    else if (suffix == "3"){
+      delay(31500);  
+    }
+    
     ftduino.motor_counter(Ftduino::M2, Ftduino::LEFT, Ftduino::MAX, 250);
     while(ftduino.motor_counter_active(Ftduino::M2));
     ftduino.output_set(Ftduino::O7, Ftduino::HI, Ftduino::MAX);
