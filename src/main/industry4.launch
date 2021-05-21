@@ -38,6 +38,11 @@
 
 <!-- Declaring Nodes -->
     
+    <node machine="main" pkg="ft_industry4_ftduino" name="status_update" type="status_update.py">
+	<param name="port" value="/dev/ttyACM0"/>
+	<param name="baud" value="57600"/>
+    </node>
+
     <node machine="hbw" pkg="rosserial_python" name="hbw_node" type="serial_node.py">
 	<param name="port" value="/dev/ttyACM0"/>
 	<param name="baud" value="57600"/>
