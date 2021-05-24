@@ -195,13 +195,13 @@ void empty_locCb(const std_msgs::String &payload_msg){
   while(ftduino.motor_counter_active(Ftduino::M2));
 
   if (suffix == "1"){
-    delay(20500);  
+    delay(21500);  
   }
   else if (suffix == "2"){
-    delay(23500);  
+    delay(26500);  
   }
   else if (suffix == "3"){
-    delay(30500);  
+    delay(33500);  
   }
   
   //drop material
@@ -316,13 +316,13 @@ void material_processing(const std_msgs::String &payload_msg){
     while(ftduino.motor_counter_active(Ftduino::M3));
     
     if (suffix == "1"){
-      delay(21500);  
+      delay(23500);  
     }
     else if (suffix == "2"){
-      delay(24500);  
+      delay(27500);  
     }
     else if (suffix == "3"){
-      delay(31500);  
+      delay(33500);  
     }
     
     ftduino.motor_counter(Ftduino::M2, Ftduino::LEFT, Ftduino::MAX, 250);
