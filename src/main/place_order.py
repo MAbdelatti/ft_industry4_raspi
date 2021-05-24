@@ -2,6 +2,7 @@
 
 import json
 import sys
+from os import path
 import rospy
 from std_msgs.msg import String
 
