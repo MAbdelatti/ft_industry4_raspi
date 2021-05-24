@@ -33,7 +33,7 @@ def create_data_file():
 
 if __name__ == '__main__':
 #    create_data_file()
-file_path = path.join(path.abspath(path.dirname(__file__)), "data.json")
+    file_path = path.join(path.abspath(path.dirname(__file__)), "data.json")
 # Read existing data file:
     with open(file_path, 'r') as fp:
         r_data = json.load(fp)
