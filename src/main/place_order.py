@@ -27,15 +27,15 @@ def create_data_file():
             'B1': 'white', 'B2': 'red', 'B3': 'blue',
             'C1': 'white', 'C2': 'red', 'C3': 'blue'}
 
-    with open('data.json', 'wb') as fp:
+    with open(file_path, 'wb') as fp:
         json.dump(data, fp, sort_keys=True, indent=4)
 
 
 if __name__ == '__main__':
 #    create_data_file()
-
+file_path = path.join(path.abspath(path.dirname(__file__)), "data.json")
 # Read existing data file:
-    with open('data.json', 'r') as fp:
+    with open(file_path, 'r') as fp:
         r_data = json.load(fp)
 
     u_order = sys.argv[1].lower()
