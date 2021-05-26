@@ -1,13 +1,18 @@
 <launch>
 <!-- Declaring Machines -->
-    <machine
-        name="main"
-        address="192.168.0.10"
-        env-loader="/home/ubuntu/catkin_ws/devel/setup.bash"
-        default="true"
-        user="ubuntu"
-        password="RaspiUsr">
-    </machine>
+    <group>
+    	<machine
+            name="main"
+            address="192.168.0.10"
+            env-loader="/home/ubuntu/catkin_ws/devel/setup.bash"
+            default="true"
+            user="ubuntu"
+            password="RaspiUsr">
+        </machine>
+    
+        <!-- Include Files -->
+            <include file="$(find mqtt_bridge)/launch/ft_industry4_params.launch" />
+    </group>
 
     <machine
         name="hbw"
@@ -38,7 +43,7 @@
 
 <!-- Declaring Nodes -->
     
-    <node machine="main" pkg="ft_industry4_ftduino" name="status_update" type="status_update.py">
+    <node machine="main" pkg="ft_industry4_raspi" name="status_update" type="status_update.py">
 	<param name="port" value="/dev/ttyACM0"/>
 	<param name="baud" value="57600"/>
     </node>
@@ -57,5 +62,5 @@
 	<param name="port" value="/dev/ttyACM0"/>
 	<param name="baud" value="57600"/>
     </node>
-
+    
 </launch>
