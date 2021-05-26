@@ -11,7 +11,7 @@
         </machine>
     
         <!-- Include Files -->
-            <include file="$(find mqtt_bridge)/launch/ft_industry4_params.launch" />
+            <include file="$(find ft_industry4_raspi)/src/main/ft_industry4_params.launch" />
     </group>
 
     <machine

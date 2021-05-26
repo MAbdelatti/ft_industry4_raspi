@@ -1,0 +1,7 @@
+<launch>
+  <arg name="use_tls" default="false" />
+  <node name="mqtt_bridge" pkg="mqtt_bridge" type="mqtt_bridge_node.py" output="screen">
+    <rosparam command="load" file="$(find ft_industry4_raspi)/src/main/ft_industry4_params.yaml" />
+    <rosparam if="$(arg use_tls)" command="load" ns="mqtt" file="$(find ft_industry4_raspi)/src/main/tls_params.yaml" />
+  </node>
+</launch>
