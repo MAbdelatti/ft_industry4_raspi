@@ -7,8 +7,7 @@
             env-loader="/home/ubuntu/catkin_ws/devel/setup.bash"
             default="true"
             user="ubuntu"
-            password="RaspiUsr">
-        </machine>
+        />
     
         <!-- Include Files -->
             <include file="$(find ft_industry4_raspi)/src/main/ft_industry4_params.launch" />
@@ -20,8 +19,7 @@
         env-loader="/home/ubuntu/env_hbw.sh"
         default="true"
         user="ubuntu"
-        password="RaspiUsr">
-    </machine>
+    />
 
     <machine
         name="vgr"
@@ -29,8 +27,7 @@
         env-loader="/home/ubuntu/env_vgr.sh"
         default="true"
         user="ubuntu"
-        password="RaspiUsr">
-    </machine>
+    />
 
     <machine
         name="sld"
@@ -38,8 +35,7 @@
         env-loader="/home/ubuntu/env_sld.sh"
         default="true"
         user="ubuntu"
-        password="RaspiUsr">
-    </machine>
+    />
 
 <!-- Declaring Nodes -->
     
