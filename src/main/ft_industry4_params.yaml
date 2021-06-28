@@ -9,39 +9,28 @@ mqtt:
 #serializer: json:dumps
 #deserializer: json:loads
 bridge:
-  # ping pong
-  - factory: mqtt_bridge.bridge:RosToMqttBridge
-    msg_type: std_msgs.msg:Bool
-    topic_from: /ping
-    topic_to: ping
-  - factory: mqtt_bridge.bridge:MqttToRosBridge
-    msg_type: std_msgs.msg:Bool
-    topic_from: ping
-    topic_to: /pong
-  # echo back
-  - factory: mqtt_bridge.bridge:RosToMqttBridge
-    msg_type: std_msgs.msg:String
-    topic_from: /echo
-    topic_to: echo
-  - factory: mqtt_bridge.bridge:MqttToRosBridge
-    msg_type: std_msgs.msg:String
-    topic_from: echo
-    topic_to: /back
-  # private path
-  - factory: mqtt_bridge.bridge:RosToMqttBridge
-    msg_type: std_msgs.msg:String
-    topic_from: /private/echo
-    topic_to: ~/echo
-  - factory: mqtt_bridge.bridge:MqttToRosBridge
-    msg_type: std_msgs.msg:String
-    topic_from: ~/echo
-    topic_to: /private/back
   # new_order 
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
+    msg_type: std_msgs.msg:String
+    topic_from: mq_new_order
+    topic_to: /new_order
+  # /vgr_new_material
   - factory: mqtt_bridge.bridge:RosToMqttBridge
     msg_type: std_msgs.msg:String
-    topic_from: /new_order
-    topic_to: mq_new_order
-    #- factory: mqtt_bridge.bridge:MqttToRosBridge
-    #msg_type: std_msgs.msg:String
-    #topic_from:
-    #topic_to: 
+    topic_from: /vgr_new_material
+    topic_to: mq_vgr_new_material
+  # /sld_blue_pub
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: std_msgs.msg:Bool
+    topic_from: /sld_blue_pub
+    topic_to: mq_sld_blue_pub
+  # /sld_red_pub
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: std_msgs.msg:Bool
+    topic_from: /sld_red_pub
+    topic_to: mq_sld_red_pub
+  # /sld_white_pub
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: std_msgs.msg:Bool
+    topic_from: /sld_white_pub
+    topic_to: mq_sld_white_pub
